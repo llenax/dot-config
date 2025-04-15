@@ -1,0 +1,18 @@
+[commit]
+	gpgSign = true
+
+[gpg]
+	format = "ssh"
+	program = "/usr/bin/gpg2"
+
+[gpg "ssh"]
+	allowedSignersFile = "~/.ssh/allowed_signers"
+	program = "/usr/bin/ssh-keygen"
+
+[tag]
+	gpgSign = true
+
+[user]
+	email = "67596732+llenax@users.noreply.github.com"
+	name = "llenax"
+	signingKey = "~/.ssh/id_ed25519.pub"

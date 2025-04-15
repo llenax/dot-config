@@ -1,0 +1,37 @@
+# command = /etc/profiles/per-user/berke/bin/zsh --login --interactive
+cursor-style = block
+cursor-style-blink = false
+shell-integration-features = no-cursor
+#custom-shader = ghostty-shaders/gears-and-belts.glsl
+window-decoration = server
+window-new-tab-position = end
+background-opacity = 0.9
+gtk-adwaita = false
+#gtk-tabs-location = bottom
+gtk-wide-tabs = false
+
+# don't ask to close ghostty
+confirm-close-surface = false
+
+background = #181818
+foreground = #cccccc
+selection-background = #3a3d41
+selection-foreground = #e0e0e0
+cursor-color = #ffffff
+cursor-text = #000000
+palette = 0=#1e1e1e
+palette = 1=#ab4642
+palette = 2=#a1b56c
+palette = 3=#f7ca88
+palette = 4=#d8d8d8
+palette = 5=#c08c68
+palette = 6=#b8b8b8
+palette = 7=#f8f8f8
+palette = 8=#ba8baf
+palette = 9=#ab4642
+palette = 10=#a1b56c
+palette = 11=#f7ca88
+palette = 12=#d8d8d8
+palette = 13=#c08c68
+palette = 14=#b8b8b8
+palette = 15=#f8f8f8
