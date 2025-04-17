@@ -6,7 +6,7 @@
 	program = "/usr/bin/gpg2"
 
 [gpg "ssh"]
-	allowedSignersFile = "~/.ssh/allowed_signers"
+	allowedSignersFile = "~/.config/git/allowed_signers"
 	program = "/usr/bin/ssh-keygen"
 
 [tag]
