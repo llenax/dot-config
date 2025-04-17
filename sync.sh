@@ -45,6 +45,7 @@ done
 
 require_apt_pkg "git"
 require_apt_pkg "gnupg2" "gpg2"
+require_apt_pkg "ripgrep" "rg"
 
 if [ -d $GIT_DIR ] && [ -f $SSH_PUBKEY_FILE ]; then
     email=$(git config --get user.email)
