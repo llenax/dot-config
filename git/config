@@ -13,6 +13,6 @@
 	gpgSign = true
 
 [user]
-	email = "67596732+llenax@users.noreply.github.com"
+	email = "berkebs18@proton.me"
 	name = "llenax"
 	signingKey = "~/.ssh/id_ed25519.pub"
