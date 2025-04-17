@@ -25,6 +25,7 @@ require_apt_pkg() {
 	    echo "$package_name installed successfully"
 	else
 	    echo "failed to install $package_name"
+	    exit 1
 	fi
     fi
 
