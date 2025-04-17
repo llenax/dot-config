@@ -2,8 +2,10 @@
 hash -r
 
 CONFIG_DIR=$HOME/.config
+GIT_DIR=$CONFIG_DIR/git
+
 SSH_PUBKEY_FILE=$HOME/.ssh/id_ed25519.pub
-SSH_ALLOWED_SIGNERS_FILE=$CONFIG_DIR/git/allowed_signers
+SSH_ALLOWED_SIGNERS_FILE=$GIT_DIR/allowed_signers
 
 require_apt_pkg() {
     package_apt=$1
@@ -43,10 +45,10 @@ done
 require_apt_pkg "git"
 require_apt_pkg "gnupg2" "gpg2"
 
-(
+if [ -d $GIT_DIR ] && [ -f $SSH_PUBKEY_FILE ]; then
     email=$(git config --get user.email)
     ns="namespaces=\"git\""
     pubkey=$(cat $SSH_PUBKEY_FILE)
     echo "$email $ns $pubkey" >> $SSH_ALLOWED_SIGNERS_FILE
-)
+fi
 
