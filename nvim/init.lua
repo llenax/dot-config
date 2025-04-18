@@ -12,4 +12,5 @@ require("lazy").setup({ import = "modules/plugins" }, {
 	change_detection = {
 		notify = false,
 	},
+	install = { colorscheme = { "noirbuddy" } },
 })

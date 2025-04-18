@@ -43,9 +43,15 @@ for dir in ./*; do
     fi
 done
 
+# TODO: add another way of getting packages
+# most apt package versions are old
+# (achieving "stable" ^-^)
+# latest stable versions are not same
+# with APT's "stable" versions.
 require_apt_pkg "git"
 require_apt_pkg "gnupg2" "gpg2"
 require_apt_pkg "ripgrep" "rg"
+require_apt_pkg "sqlite3"
 
 if [ -d $GIT_DIR ] && [ -f $SSH_PUBKEY_FILE ]; then
     email=$(git config --get user.email)

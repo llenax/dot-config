@@ -43,7 +43,7 @@ M.setup = function()
 		vim.cmd("silent! wall")
 
 		-- Check if we're in a git repository
-		local is_git_repo = vim.fn.system("git rev-parse --is-inside-work-tree 2>/dev/null")
+		vim.fn.system("git rev-parse --is-inside-work-tree 2>/dev/null")
 		if vim.v.shell_error ~= 0 then
 			vim.notify("Not in a Git repository", 0, { title = "Git Diff All" })
 			return
