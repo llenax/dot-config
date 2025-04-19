@@ -183,6 +183,8 @@ function theme.at_screen_connect(s)
 
   s.mytasklist = awful.widget.tasklist(s, awful.widget.tasklist.filter.currenttags, tasklist_buttons)
 
+  s.mypromptbox = awful.widget.prompt()
+
   -- Create the wibox
   s.mywibox = awful.wibar { position = "top", screen = s, height = dpi(20), bg = theme.bg_normal, fg = theme.fg_normal }
 

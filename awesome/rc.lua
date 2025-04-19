@@ -6,6 +6,7 @@ local mods = require("custom.theme.constants").mods
 
 local awful = require "awful"
 local beautiful = require "beautiful"
+local naughty = require "naughty"
 local gears = require "gears"
 local hotkeys_popup = require "awful.hotkeys_popup"
 local wibox = require "wibox"
@@ -22,13 +23,9 @@ awful.layout.layouts = {
 -- Setup Theme
 awful.screen.connect_for_each_screen(require("custom.theme").at_screen_connect)
 
-root.buttons(gears.table.join(
-  awful.button({}, 3, function()
-    require("custom.widgets.menu"):toggle()
-  end),
-  awful.button({}, 4, awful.tag.viewnext),
-  awful.button({}, 5, awful.tag.viewprev)
-))
+root.buttons(gears.table.join(awful.button({}, 3, function()
+  require("custom.widgets.menu"):toggle()
+end)))
 
 local global_keys = gears.table.join(
   awful.key({ mods.super }, "c", function()
@@ -36,6 +33,42 @@ local global_keys = gears.table.join(
       beautiful.cal.show(7)
     end
   end, { description = "show calendar", group = "widgets" }),
+  awful.key({}, "Print", function()
+    local cmd = string.format("MAIM_PKG=%s %s/.local/scripts/maim-clipboard-ss", "/usr/bin/maim", os.getenv "HOME")
+    awful.spawn.easy_async_with_shell(cmd, function(_, stderr, _, exitcode)
+      if exitcode == 0 then
+        naughty.notify {
+          preset = naughty.config.presets.normal,
+          title = "Screenshot successfull",
+          text = "Screenshot saved to clipboard",
+        }
+      else
+        naughty.notify {
+          preset = naughty.config.presets.critical,
+          title = "Screenshot failed",
+          text = "Screenshot failed with " .. exitcode .. "\n Error: " .. stderr,
+        }
+      end
+    end)
+  end, { description = "take fullscreen screenshot", group = "client" }),
+  awful.key({ mods.shift }, "Print", function()
+    local cmd = string.format("%s --select | xclip -selection clipboard -t image/png", "/usr/bin/maim")
+    awful.spawn.easy_async_with_shell(cmd, function(_, stderr, _, exitcode)
+      if exitcode == 0 then
+        naughty.notify {
+          preset = naughty.config.presets.normal,
+          title = "Screenshot successfull",
+          text = "Screenshot saved to clipboard",
+        }
+      else
+        naughty.notify {
+          preset = naughty.config.presets.critical,
+          title = "Screenshot failed",
+          text = "Screenshot failed with " .. exitcode .. "\n Error: " .. stderr,
+        }
+      end
+    end)
+  end, { description = "take area screenshot", group = "client" }),
   awful.key({ mods.super }, "s", hotkeys_popup.show_help, {
     description = "show help",
     group = "awesome",
