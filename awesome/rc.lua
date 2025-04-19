@@ -11,7 +11,7 @@ local gears = require "gears"
 local hotkeys_popup = require "awful.hotkeys_popup"
 local wibox = require "wibox"
 
-awful.util.spawn_with_shell "xrandr --output HDMI-1 --left-of eDP-1 --primary"
+awful.util.spawn_with_shell "xrandr --output eDP-1 --right-of HDMI-1 --primary"
 
 beautiful.init(string.format("%s/.config/awesome/custom/theme.lua", os.getenv "HOME"))
 require "awful.autofocus"
@@ -19,6 +19,10 @@ require "awful.autofocus"
 awful.layout.layouts = {
   awful.layout.suit.tile,
 }
+
+--startup
+awful.spawn.once "blueman-applet"
+awful.spawn.once "nm-applet"
 
 -- Setup Theme
 awful.screen.connect_for_each_screen(require("custom.theme").at_screen_connect)

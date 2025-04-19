@@ -1,16 +1,11 @@
 return {
 	{
-		"jesseleite/nvim-noirbuddy",
-		dependencies = {
-			{ "tjdevries/colorbuddy.nvim" },
-		},
+		"folke/tokyonight.nvim",
 		lazy = false,
 		priority = 1000,
 		opts = {},
 		config = function()
-			require("noirbuddy").setup({
-				preset = "miami-nights",
-			})
+			vim.cmd.colorscheme("tokyonight")
 		end,
 	},
 }

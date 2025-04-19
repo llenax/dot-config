@@ -138,11 +138,30 @@ local function set_wallpaper(s)
   end
 end
 
+local batterywidget = wibox.widget.textbox()
+local batteryicon = wibox.widget.imagebox()
+
 -- Re-set wallpaper when a screen's geometry changes (e.g. different resolution)
 screen.connect_signal("property::geometry", set_wallpaper)
 
 function theme.at_screen_connect(s)
   set_wallpaper(s)
+
+  local batterywidgettimer = timer { timeout = 5 }
+  batterywidgettimer:connect_signal("timeout", function()
+    local fh = assert(io.popen("acpi | cut -d, -f 2,3 | cut -d% -f 1 -", "r"))
+    local per = fh:read "*number"
+    batterywidget:set_text(per .. "%")
+    if per > 80 then
+      batteryicon:set_image(theme.widget_battery)
+    elseif per > 40 then
+      batteryicon:set_image(theme.widget_battery_low)
+    else
+      batteryicon:set_image(theme.widget_battery_empty)
+    end
+    fh:close()
+  end)
+  batterywidgettimer:start()
 
   -- Each screen has its own tag table.
   local screen_layout = awful.layout.layouts[1]
@@ -202,6 +221,15 @@ function theme.at_screen_connect(s)
       layout = wibox.layout.fixed.horizontal,
       wibox.widget.systray(),
       text_clock,
+      wibox.container.margin(
+        wibox.widget {
+          batteryicon,
+          batterywidget,
+          layout = wibox.layout.align.horizontal,
+        },
+        dpi(3),
+        dpi(3)
+      ),
       -- s.mylayoutbox,
     },
   }
