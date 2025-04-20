@@ -155,6 +155,7 @@ screen.connect_signal("property::geometry", set_wallpaper)
 function theme.at_screen_connect(s)
   set_wallpaper(s)
 
+  ---@diagnostic disable-next-line
   local batterywidgettimer = timer { timeout = 5 }
   batterywidgettimer:connect_signal("timeout", function()
     local fh = assert(io.popen("acpi | cut -d, -f 2,3 | cut -d% -f 1 -", "r"))
@@ -174,7 +175,7 @@ function theme.at_screen_connect(s)
   -- Each screen has its own tag table.
   local screen_layout = awful.layout.layouts[1]
   if s.index == 1 then
-    screen_layout = awful.layout.suit.tile.bottom
+    screen_layout = awful.layout.suit.tile.left
   end
 
   awful.tag({ "1", "2", "3", "4", "5", "6", "7", "8", "9" }, s, screen_layout)

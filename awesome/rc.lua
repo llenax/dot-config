@@ -14,8 +14,8 @@ local wibox = require "wibox"
 --startup
 awful.spawn.once "blueman-applet"
 awful.spawn.once "nm-applet"
-
-awful.util.spawn_with_shell "xrandr --output eDP-1 --right-of HDMI-1 --primary"
+-- awful.spawn.once "picom --backend glx"
+awful.spawn.once "xrandr --output eDP-1 --right-of HDMI-1 --primary"
 
 beautiful.init(string.format("%s/.config/awesome/custom/theme.lua", os.getenv "HOME"))
 require "awful.autofocus"
