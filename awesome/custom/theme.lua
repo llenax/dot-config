@@ -141,6 +141,14 @@ end
 local batterywidget = wibox.widget.textbox()
 local batteryicon = wibox.widget.imagebox()
 
+local month_calendar = awful.widget.calendar_popup.month {
+  bg = "#222222",
+  style_focus = {
+    bg_color = "#4444ff",
+  },
+}
+month_calendar:attach(text_clock, "tr")
+
 -- Re-set wallpaper when a screen's geometry changes (e.g. different resolution)
 screen.connect_signal("property::geometry", set_wallpaper)
 

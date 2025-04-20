@@ -32,11 +32,6 @@ root.buttons(gears.table.join(awful.button({}, 3, function()
 end)))
 
 local global_keys = gears.table.join(
-  awful.key({ mods.super }, "c", function()
-    if beautiful.cal then
-      beautiful.cal.show(7)
-    end
-  end, { description = "show calendar", group = "widgets" }),
   awful.key({}, "Print", function()
     local cmd = string.format("MAIM_PKG=%s %s/.local/scripts/maim-clipboard-ss", "/usr/bin/maim", os.getenv "HOME")
     awful.spawn.easy_async_with_shell(cmd, function(_, stderr, _, exitcode)
