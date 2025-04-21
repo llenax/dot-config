@@ -206,8 +206,6 @@ local global_keys = gears.table.join(
   }), -- Prompt
 
   awful.key({ mods.super }, "a", function()
-    -- TODO: I have stuff like ghostty installed without Desktop stuff...
-    -- I guess I could add that and it would show up in drun, but ... idk
     awful.spawn "rofi -show run"
   end, {
     description = "run prompt",
@@ -301,9 +299,8 @@ local client_keys = gears.table.join(
     description = "(un)maximize horizontally",
     group = "client",
   }),
-  -- TODO: Gotta figure out why this just opens 8 things?
   awful.key({ mods.super, mods.control }, "Return", function()
-    awful.spawn("kitty", { floating = true })
+    awful.spawn("ghostty", { floating = true })
   end, { description = "spawn floating terminal", group = "launcher" })
 )
 
