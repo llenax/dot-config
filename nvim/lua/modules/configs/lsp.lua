@@ -36,6 +36,14 @@ local servers = {
 			},
 		},
 	},
+	lexical = {
+		cmd = { "/home/berke/.local/share/nvim/mason/bin/lexical", "server" },
+		root_dir = require("lspconfig.util").root_pattern({ "mix.exs" }),
+		server_capabilities = {
+			completionProvider = vim.NIL,
+			definitionProvider = true,
+		},
+	},
 }
 
 local servers_to_install = vim.tbl_filter(function(key)

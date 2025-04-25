@@ -1,0 +1,35 @@
+#!/usr/bin/env bash
+
+logout="Logout"
+reboot="Reboot"
+shutdown="Shutdown"
+yes='Yes'
+no='No'
+
+logout_cmd="pkill xinit"
+reboot_cmd="systemctl reboot"
+shutdown_cmd="systemctl poweroff"
+
+# Function to confirm the action
+# $1: Message to display
+# $2: Command to execute if confirmed
+confirm() {
+  local mesg=$1
+  local cmd=$2
+
+  echo -e "$no\n$yes" | rofi -dmenu -mesg "$mesg" | grep -q "$yes" && eval "$cmd"
+}
+
+selected=$(echo -e "$logout\n$reboot\n$shutdown" | rofi -mesg "Session Manager" -dmenu)
+
+case ${selected} in
+  $logout)
+    confirm "Are you sure you want to log out?" "$logout_cmd"
+    ;;
+  $reboot)
+    confirm "Are you sure you want to reboot?" "$reboot_cmd"
+    ;;
+  $shutdown)
+    confirm "Are you sure you want to shut down?" "$shutdown_cmd"
+    ;;
+esac

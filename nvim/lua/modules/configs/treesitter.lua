@@ -1,8 +1,15 @@
 local group = vim.api.nvim_create_augroup("custom-treesitter", { clear = true })
 
 require("nvim-treesitter").setup({
-	ensure_installed = { "php", "html", "javascript", "blade" }, -- Add other languages you use
-	sync_install = false,
+	ensure_installed = {
+		"php",
+		"html",
+		"javascript",
+		"blade",
+		"elixir",
+		"heex",
+	},
+	sync_install = true,
 	auto_install = true,
 	highlight = {
 		enable = true,

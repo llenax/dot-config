@@ -5,6 +5,7 @@ local wibox = require "wibox"
 local dpi = require("beautiful.xresources").apply_dpi
 local mouse = require("custom.theme.constants").mouse
 local mods = require("custom.theme.constants").mods
+local naughty = require "naughty"
 
 local theme = {}
 theme.dir = os.getenv "HOME" .. "/.config/awesome/custom/theme"
@@ -216,19 +217,19 @@ function theme.at_screen_connect(s)
   -- Create the wibox
   s.mywibox = awful.wibar { position = "top", screen = s, height = dpi(20), bg = theme.bg_normal, fg = theme.fg_normal }
 
-  -- Add widgets to the wibox
+  s.systray = wibox.widget.systray()
+
   s.mywibox:setup {
     layout = wibox.layout.align.horizontal,
     { -- Left widgets
       layout = wibox.layout.fixed.horizontal,
-      --spr,
       s.mytaglist,
       s.mypromptbox,
     },
     s.mytasklist, -- Middle widget
     { -- Right widgets
       layout = wibox.layout.fixed.horizontal,
-      wibox.widget.systray(),
+      s.systray,
       text_clock,
       wibox.container.margin(
         wibox.widget {
@@ -239,7 +240,6 @@ function theme.at_screen_connect(s)
         dpi(3),
         dpi(3)
       ),
-      -- s.mylayoutbox,
     },
   }
 end

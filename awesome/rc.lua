@@ -14,8 +14,10 @@ local wibox = require "wibox"
 --startup
 awful.spawn.once "blueman-applet"
 awful.spawn.once "nm-applet"
--- awful.spawn.once "picom --backend glx"
-awful.spawn.once "xrandr --output eDP-1 --right-of HDMI-1 --primary"
+awful.spawn.once "picom --backend glx"
+-- awful.spawn "xrandr --output eDP-1 --primary --right-of HDMI-1 --pos 0x0 --rotate normal --output HDMI-1 --mode 1920x1080 --pos 1920x0 --rotate normal"
+
+awful.mouse.screen = awful.screen.primary
 
 beautiful.init(string.format("%s/.config/awesome/custom/theme.lua", os.getenv "HOME"))
 require "awful.autofocus"
@@ -34,39 +36,27 @@ end)))
 local global_keys = gears.table.join(
   awful.key({}, "Print", function()
     local cmd = string.format("MAIM_PKG=%s %s/.local/scripts/maim-clipboard-ss", "/usr/bin/maim", os.getenv "HOME")
-    awful.spawn.easy_async_with_shell(cmd, function(_, stderr, _, exitcode)
-      if exitcode == 0 then
-        naughty.notify {
-          preset = naughty.config.presets.normal,
-          title = "Screenshot successfull",
-          text = "Screenshot saved to clipboard",
-        }
-      else
+    awful.spawn.with_line_callback("bash -c '" .. cmd .. "'", {
+      stderr = function(_, stderr)
         naughty.notify {
           preset = naughty.config.presets.critical,
           title = "Screenshot failed",
-          text = "Screenshot failed with " .. exitcode .. "\n Error: " .. stderr,
+          text = "Error: " .. stderr,
         }
-      end
-    end)
+      end,
+    })
   end, { description = "take fullscreen screenshot", group = "client" }),
   awful.key({ mods.shift }, "Print", function()
-    local cmd = string.format("%s --select | xclip -selection clipboard -t image/png", "/usr/bin/maim")
-    awful.spawn.easy_async_with_shell(cmd, function(_, stderr, _, exitcode)
-      if exitcode == 0 then
-        naughty.notify {
-          preset = naughty.config.presets.normal,
-          title = "Screenshot successfull",
-          text = "Screenshot saved to clipboard",
-        }
-      else
+    local cmd = string.format("MAIM_PKG=%s %s/.local/scripts/maim-clipboard-ss-area", "/usr/bin/maim", os.getenv "HOME")
+    awful.spawn.with_line_callback("bash -c '" .. cmd .. "'", {
+      stderr = function(_, stderr)
         naughty.notify {
           preset = naughty.config.presets.critical,
           title = "Screenshot failed",
-          text = "Screenshot failed with " .. exitcode .. "\n Error: " .. stderr,
+          text = "Error: " .. stderr,
         }
-      end
-    end)
+      end,
+    })
   end, { description = "take area screenshot", group = "client" }),
   awful.key({ mods.super }, "s", hotkeys_popup.show_help, {
     description = "show help",
@@ -206,12 +196,23 @@ local global_keys = gears.table.join(
   }), -- Prompt
 
   awful.key({ mods.super }, "a", function()
-    awful.spawn "rofi -show run"
+    awful.spawn "rofi -modi drun,run -show run -show-icons"
   end, {
     description = "run prompt",
     group = "launcher",
   }),
-
+  awful.key({ mods.super, mods.shift }, "a", function()
+    awful.spawn "rofi -modi drun,run -show drun -show-icons"
+  end, {
+    description = "run app launcher",
+    group = "launcher",
+  }),
+  awful.key({ mods.super, mods.shift }, "e", function()
+    awful.spawn "bash -c '$HOME/.config/rofi/session_manager/session_manager'"
+  end, {
+    description = "run session_manager",
+    group = "launcher",
+  }),
   awful.key({ mods.super }, "x", function()
     awful.prompt.run {
       prompt = "Run Lua code: ",

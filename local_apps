@@ -1,0 +1,85 @@
+#!/usr/bin/env bash
+#
+# [App]s: each directory inside ~/.local/apps
+# check "bin" directory exists inside that directory
+# add to BIN_DIR as `x:y:z` for correct path environment
+APPS_BIN_DIR=""
+APPS_LIB_DIR=""
+APPS_INCLUDE_DIR=""
+APPS_PKGCONFIG_DIR=""
+LUA_DIR=""
+LUA_LIBRARIES=""
+LUA_INCLUDE_DIR=""
+
+GO_INSTALLED_PKGS_DIR=$HOME/go
+LUAROCKS_DIR=$HOME/.luarocks
+
+link_local_apps () {
+  local file_path=$1
+  local file_name=$(basename $file_path)
+
+  if [ -f "$file_path" ] && ! grep -qs "source $file_path" "$HOME/.bashrc"; then
+    echo "linking apps: $file_name"
+    echo -e "\\nsource $file_path" >> $HOME/.bashrc
+  fi
+}
+
+for dir in $HOME/.local/apps/*; do
+
+  if [[ "${dir##*/}" == lua-5.4* ]]; then
+    continue
+  fi
+
+  if [ -d "$dir/lib" ]; then
+    APPS_LIB_DIR=${APPS_LIB_DIR:+$APPS_LIB_DIR:}"$dir/lib"
+  fi
+
+  if [ -d "$dir/lib/pkgconfig" ]; then
+    APPS_PKGCONFIG_DIR=${APPS_PKGCONFIG_DIR:+$APPS_PKGCONFIG_DIR:}"$dir/lib/pkgconfig"
+  fi
+
+  if [ -d "$dir/include" ]; then
+    APPS_INCLUDE_DIR=${APPS_INCLUDE_DIR:+$APPS_INCLUDE_DIR:}"$dir/include"
+  fi
+
+  if [ -d "$dir/bin" ]; then
+    APPS_BIN_DIR=${APPS_BIN_DIR:+$APPS_BIN_DIR:}"$dir/bin"
+  fi
+
+  if [[ -d "$dir" && "${dir##*/}" == lua-5.3* ]]; then
+    LUA_DIR="$dir"
+    LUA_LIBRARIES="$dir/lib"
+    LUA_INCLUDE_DIR="$dir/include"
+  fi
+done
+
+if [ -d "$GO_INSTALLED_PKGS_DIR/bin" ]; then
+  export PATH=${PATH:+$PATH:}"$GO_INSTALLED_PKGS_DIR/bin"
+fi
+
+if [ -d "$LUAROCKS_DIR/bin" ]; then
+  export PATH=${PATH:+$PATH:}"$LUAROCKS_DIR/bin"
+fi
+
+export PATH=${PATH:+$PATH:}$APPS_BIN_DIR
+export LD_LIBRARY_PATH=${LD_LIBRARY_PATH:+$LD_LIBRARY_PATH:}$APPS_LIB_DIR
+export C_INCLUDE_PATH=${C_INCLUDE_PATH:+$C_INCLUDE_PATH:}$APPS_INCLUDE_DIR
+export CPLUS_INCLUDE_PATH=${CPLUS_INCLUDE_PATH:+$CPLUS_INCLUDE_PATH:}$APPS_INCLUDE_DIR
+export PKG_CONFIG_PATH=${PKG_CONFIG_PATH:+$PKG_CONFIG_PATH:}$APPS_PKGCONFIG_DIR
+
+if [ -d  "$HOME/build/lua-5.3.6/etc" ]; then
+  export PKG_CONFIG_PATH=${PKG_CONFIG_PATH:+$PKG_CONFIG_PATH:}"$HOME/build/lua-5.3.6/etc" 
+fi
+
+if [ -d "${ASDF_DATA_DIR:-$HOME/.asdf}" ]; then
+  export PATH="${PATH:+$PATH:}${ASDF_DATA_DIR:-$HOME/.asdf}/shims"
+fi
+
+export LUA_DIR=$LUA_DIR
+export LUA_LIBRARIES=$LUA_LIBRARIES
+export LUA_INCLUDE_DIR=$LUA_INCLUDE_DIR
+
+export GO_DIR=$GO_DIR
+export LUAROCKS_DIR=$LUAROCKS_DIR
+
+link_local_apps $HOME/.local_apps
