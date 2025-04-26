@@ -126,7 +126,7 @@ theme.titlebar_maximized_button_focus_inactive = theme.dir .. "/icons/titlebar/m
 theme.titlebar_maximized_button_normal_inactive = theme.dir .. "/icons/titlebar/maximized_normal_inactive.png"
 
 -- local mylauncher = awful.widget.launcher { image = beautiful.awesome_icon, menu = my_main_menu }
-local text_clock = wibox.widget.textclock " %I:%M %p "
+local text_clock = wibox.widget.textclock " (%R) - %A "
 text_clock:set_font "monospace 10"
 
 local function set_wallpaper(s)
@@ -215,7 +215,13 @@ function theme.at_screen_connect(s)
   s.mypromptbox = awful.widget.prompt()
 
   -- Create the wibox
-  s.mywibox = awful.wibar { position = "top", screen = s, height = dpi(20), bg = theme.bg_normal, fg = theme.fg_normal }
+  s.mywibox = awful.wibar {
+    position = "top",
+    screen = s,
+    height = dpi(20),
+    bg = theme.bg_normal,
+    fg = theme.fg_normal,
+  }
 
   s.systray = wibox.widget.systray()
 

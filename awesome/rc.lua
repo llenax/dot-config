@@ -196,13 +196,35 @@ local global_keys = gears.table.join(
   }), -- Prompt
 
   awful.key({ mods.super }, "a", function()
-    awful.spawn "rofi -modi drun,run -show run -show-icons"
+    local rofi_path = string.format("%s/.local/scripts/rofi-wrapper", os.getenv "HOME")
+    local rofi = io.open(rofi_path, "r")
+    if rofi and os.execute(string.format("[ -x %s ]", rofi_path)) then
+      awful.spawn(string.format("%s -modi drun,run -show run -show-icons", rofi_path))
+    else
+      naughty.notify {
+        preset = naughty.config.presets.critical,
+        title = "Rofi",
+        text = "Rofi is not installed. Please install it.",
+        timeout = 5,
+      }
+    end
   end, {
     description = "run prompt",
     group = "launcher",
   }),
   awful.key({ mods.super, mods.shift }, "a", function()
-    awful.spawn "rofi -modi drun,run -show drun -show-icons"
+    local rofi_path = string.format("%s/.local/scripts/rofi-wrapper", os.getenv "HOME")
+    local rofi = io.open(rofi_path, "r")
+    if rofi and os.execute(string.format("[ -x %s ]", rofi_path)) then
+      awful.spawn(string.format("%s -modi drun,run -show drun -show-icons", rofi_path))
+    else
+      naughty.notify {
+        preset = naughty.config.presets.critical,
+        title = "Rofi",
+        text = "Rofi is not installed. Please install it.",
+        timeout = 5,
+      }
+    end
   end, {
     description = "run app launcher",
     group = "launcher",
