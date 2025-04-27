@@ -1,0 +1,182 @@
+#!/usr/bin/env bash
+
+HISTORY_FILE="$HOME/.calc_history"
+HISTORY_TMP="$HOME/.calc_history_tmp"
+
+is_number() {
+    local token="$1"
+    if [[ "$token" =~ ^-?[0-9]*\.?[0-9]+?$ ]]; then
+        return 0
+    else
+        return 1
+    fi
+}
+
+preprocess_expression() {
+    local input="$1"
+    local tokens=()
+
+    set -f
+
+    local i=0
+    local len=${#input}
+    while [ $i -lt $len ]; do
+        char="${input:$i:1}"
+
+        # Skip whitespace
+        if [[ "$char" =~ [[:space:]] ]]; then
+            ((i++))
+            continue
+        fi
+        # Handle operators and parentheses
+        if [[ "$char" =~ [+-/*()] ]]; then
+            tokens+=("$char")
+            ((i++))
+            continue
+        fi
+        # Handle numbers
+        if [[ "$char" =~ [0-9] ]]; then
+            tokens+=("$char")
+            ((i++))
+            continue
+        fi
+
+        echo "Invalid character: $char" >&2
+        return 1
+    done
+
+    set +f
+
+    echo "${tokens[@]}"
+    return 0
+}
+
+validate_tokens() {
+    local token_str="$1"
+    set -f 
+    local tokens=($token_str)
+    set +f
+    local stack=""
+
+    local i=0
+    local len=${#tokens[@]}
+    while [ $i -lt $len ]; do
+      token="${tokens[$i]}"
+      if [ "$token" = "(" ]; then
+        stack="$stack("
+      elif [ "$token" = ")" ]; then
+        if [ -z "$stack" ]; then
+          echo "Mismatched closing parenthesis" >&2
+          return 1
+        fi
+        stack="${stack%?}"
+      elif [[ "$token" =~ [+\-/\*] ]]; then
+        if [[ $i -eq 0 || $i -eq $((len - 1)) ]]; then
+          echo "Invalid operator position" >&2
+          return 1
+        fi
+      elif is_number "$token"; then
+        : # valid number
+      else
+        echo "Invalid token: $token" >&2
+        return 1
+      fi
+      ((i++))
+    done
+
+
+    if [ -n "$stack" ]; then
+        echo "Mismatched opening parenthesis" >&2
+        return 1
+    fi
+
+    return 0
+}
+
+evaluate_with_bc() {
+    local token_str="$1"
+    local expr=""
+    set -f
+    for token in $token_str; do
+        expr+="$token"
+    done
+    set +f
+    echo $expr # expression
+    echo "$expr" | bc -l # result
+}
+
+parse_expression() {
+    local input="$1"
+
+    tokens=$(preprocess_expression "$input")
+    if [ $? -ne 0 ]; then
+        echo "Preprocessing failed: $tokens" >&2
+        return 1
+    fi
+
+    if validate_tokens "$tokens"; then
+        evaluate_with_bc "$tokens"
+        return 0
+    else
+        echo "Invalid expression" >&2
+        return 1
+    fi
+}
+
+if [ ! -f "$HISTORY_FILE" ]; then
+    touch "$HISTORY_FILE"
+fi
+
+while getopts "c" flag; do
+  case $flag in
+    c)
+      rm $HISTORY_FILE
+      touch $HISTORY_FILE
+      echo "History cleared"
+      exit 0
+      ;;
+    \?) 
+      echo "Invalid option: -$OPTARG" >&2
+      exit 1
+      ;;
+  esac
+done
+
+input=$(cat $HISTORY_FILE | rofi -dmenu -p "Enter expression:" -mesg "Supports +, -, *, /, and parentheses") 
+
+if [ -z "$input" ]; then
+    echo "No input provided" >&2
+    exit 1
+fi
+
+parsed=$(parse_expression "$input")
+expression=$(head -n1 <<< "$parsed")
+result=$(tail -n1 <<< "$parsed")
+
+if [ -z $result ]; then
+  try_again_str="Try again"
+  reinput=$(echo $try_again_str | rofi -dmenu -p "Error" -mesg "Invalid expression: $expression")
+  if [[ $reinput == $try_again_str ]]; then
+    input=$(cat $HISTORY_FILE | rofi -dmenu -p "Enter expression:" -mesg "Supports +, -, *, /, and parentheses") 
+    parsed=$(parse_expression "$input")
+    expression=$(head -n1 <<< "$parsed")
+    result=$(tail -n1 <<< "$parsed")
+    if [ -z $result ]; then
+      exit 1
+    fi
+  else
+    exit 1
+  fi
+fi
+
+
+echo $result | rofi -dmenu -p "Result: $result" -mesg "Result of the expression: $expression"
+echo $expression
+
+if ! grep -qs "$expression" "$HISTORY_FILE"; then
+  if [[ $(wc -l < $HISTORY_FILE) -gt 1 ]]; then
+    sed -i '$d' $HISTORY_FILE
+  fi
+  { echo "$expression"; cat $HISTORY_FILE; } > $HISTORY_TMP
+  mv $HISTORY_TMP $HISTORY_FILE
+fi
